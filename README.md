@@ -15,7 +15,7 @@ usuários, leituras, regras de leitura, relatórios e persistência dos dados.
 Abaixo está o diagrama UML contendo as principais classes,
 interfaces, atributos, métodos e relacionamentos do sistema.
 
-![Diagrama UML](UML_Diagrama_Entregavel_1.0.0.png)
+![Diagrama UML](./UML_Diagrama_Entregavel_1.0.0.png)
 
 ## Estrutura de Classes
 
