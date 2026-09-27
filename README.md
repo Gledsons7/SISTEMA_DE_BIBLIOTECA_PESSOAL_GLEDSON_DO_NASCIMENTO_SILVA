@@ -1,2 +1,43 @@
-# SISTEMA_DE_BIBLIOTECA_PESSOAL_GLEDSON_DO_NASCIMENTO_SILVA
-Sistema de gerenciamento de uma biblioteca pessoal.
+ # Biblioteca Pessoal
+
+## Descrição
+
+Sistema de gerenciamento de uma biblioteca digital/pessoal,
+desenvolvido utilizando os princípios de Programação Orientada a Objetos.
+
+## Objetivo
+
+O projeto tem como objetivo permitir o gerenciamento de publicações,
+usuários, leituras, regras de leitura, relatórios e persistência dos dados.
+
+## Diagrama UML
+
+Abaixo está o diagrama UML contendo as principais classes,
+interfaces, atributos, métodos e relacionamentos do sistema.
+
+![Diagrama UML](docs/uml-biblioteca.png)
+
+## Estrutura de Classes
+
+### Publicações
+
+- Publicacao
+- Livro
+- Revista
+- PublicacaoDigital
+- LivroDigital
+- Catalogavel
+
+### Usuários e Leituras
+
+- Usuario
+- Leitura
+- RegraLeitura
+- RegraPadrao
+
+### Relatórios e Persistência
+
+- Relatorio
+- Repositorio
+- RepositorioJSON
+- RepositorioSQLite
