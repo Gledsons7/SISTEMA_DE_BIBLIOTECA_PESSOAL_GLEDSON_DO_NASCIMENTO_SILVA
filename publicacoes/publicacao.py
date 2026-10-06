@@ -1,12 +1,9 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 from datetime import date
-from typing import Optional
-
-from publicacoes.status_leitura import StatusLeitura
 
 
 class Publicacao(ABC):
-    """Classe abstrata que representa uma publicação."""
+    """Representa uma publicação da biblioteca."""
 
     def __init__(
         self,
@@ -20,15 +17,19 @@ class Publicacao(ABC):
         avaliacao=None,
         dataInclusao=None
     ):
+        # Atributo privado
         self.__id = id
-        self.__titulo = titulo
-        self.__autor = autor
-        self.__ano = ano
-        self.__genero = genero
-        self.__numPaginas = numPaginas
-        self.__status = status
-        self.__avaliacao = avaliacao
-        self.__dataInclusao = dataInclusao
+
+        # Os demais atributos são definidos através dos setters.
+        # Dessa forma, as regras de validação são aplicadas.
+        self.set_titulo(titulo)
+        self.set_autor(autor)
+        self.set_ano(ano)
+        self.set_genero(genero)
+        self.set_numPaginas(numPaginas)
+        self.set_status(status)
+        self.set_avaliacao(avaliacao)
+        self.set_dataInclusao(dataInclusao)
 
     # GETTERS
 
@@ -62,55 +63,82 @@ class Publicacao(ABC):
     # SETTERS
 
     def set_id(self, id):
+        if id is None:
+            raise ValueError("O ID não pode ser vazio.")
+
         self.__id = id
 
     def set_titulo(self, titulo):
-        self.__titulo = titulo
+        if not isinstance(titulo, str) or not titulo.strip():
+            raise ValueError("O título não pode ser vazio.")
+
+        self.__titulo = titulo.strip()
 
     def set_autor(self, autor):
-        self.__autor = autor
+        if not isinstance(autor, str) or not autor.strip():
+            raise ValueError("O autor não pode ser vazio.")
+
+        self.__autor = autor.strip()
 
     def set_ano(self, ano):
+        if not isinstance(ano, int):
+            raise TypeError("O ano deve ser um número inteiro.")
+
+        if ano <= 0:
+            raise ValueError("O ano deve ser maior que zero.")
+
         self.__ano = ano
 
     def set_genero(self, genero):
-        self.__genero = genero
+        if not isinstance(genero, str) or not genero.strip():
+            raise ValueError("O gênero não pode ser vazio.")
+
+        self.__genero = genero.strip()
 
     def set_numPaginas(self, numPaginas):
+        if not isinstance(numPaginas, int):
+            raise TypeError("O número de páginas deve ser um número inteiro.")
+
+        if numPaginas <= 0:
+            raise ValueError(
+                "O número de páginas deve ser maior que zero."
+            )
+
         self.__numPaginas = numPaginas
 
     def set_status(self, status):
+        if status is None:
+            raise ValueError("O status não pode ser vazio.")
+
         self.__status = status
 
     def set_avaliacao(self, avaliacao):
+        if avaliacao is not None:
+            if not isinstance(avaliacao, (int, float)):
+                raise TypeError(
+                    "A avaliação deve ser um número."
+                )
+
+            if avaliacao < 0 or avaliacao > 10:
+                raise ValueError(
+                    "A avaliação deve estar entre 0 e 10."
+                )
+
         self.__avaliacao = avaliacao
 
     def set_dataInclusao(self, dataInclusao):
+        if dataInclusao is not None and not isinstance(dataInclusao, date):
+            raise TypeError(
+                "A data de inclusão deve ser uma data válida."
+            )
+
         self.__dataInclusao = dataInclusao
-
-    # MÉTODOS ESPECIAIS
-
-    def __str__(self):
-        return f"{self.__titulo} - {self.__autor}"
-
-    def __repr__(self):
-        return f"Publicacao(id={self.__id}, titulo='{self.__titulo}', autor='{self.__autor}')"
-
-    def __eq__(self, outra):
-        if not isinstance(outra, Publicacao):
-            return False
-
-        return self.__id == outra.get_id()
-
-    def __lt__(self, outra):
-        if not isinstance(outra, Publicacao):
-            return NotImplemented
-
-        return self.__titulo < outra.get_titulo()
-
-    # OUTROS MÉTODOS DA UML
+        
+    # VALIDAÇÃO
 
     def validarDados(self):
+        """Verifica se os dados da publicação são válidos."""
+
         if not self.__titulo:
             return False
 
@@ -123,7 +151,33 @@ class Publicacao(ABC):
         if self.__numPaginas <= 0:
             return False
 
+        if self.__avaliacao is not None:
+            if self.__avaliacao < 0 or self.__avaliacao > 10:
+                return False
+
         return True
 
-    def atualizarStatus(self, status):
-        self.__status = status
+    # MÉTODOS ESPECIAIS
+
+    def __str__(self):
+        return f"{self.__titulo} - {self.__autor}"
+
+    def __repr__(self):
+        return (
+            f"Publicacao("
+            f"id={self.__id}, "
+            f"titulo='{self.__titulo}', "
+            f"autor='{self.__autor}')"
+        )
+
+    def __eq__(self, outra):
+        if not isinstance(outra, Publicacao):
+            return False
+
+        return self.__id == outra.get_id()
+
+    def __lt__(self, outra):
+        if not isinstance(outra, Publicacao):
+            return NotImplemented
+
+        return self.__titulo < outra.get_titulo()
