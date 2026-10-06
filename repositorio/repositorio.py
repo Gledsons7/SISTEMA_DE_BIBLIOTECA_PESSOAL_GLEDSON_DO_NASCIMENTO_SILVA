@@ -1,4 +1,21 @@
 class Repositorio:
-    """Define as operações básicas de persistência dos dados."""
+    """Classe base dos repositórios da biblioteca."""
 
-    pass
+    def __init__(self):
+        self.__dados = []
+
+    def get_dados(self):
+        return self.__dados
+
+    def adicionar(self, dado):
+        self.__dados.append(dado)
+
+    def remover(self, dado):
+        if dado in self.__dados:
+            self.__dados.remove(dado)
+
+    def __len__(self):
+        return len(self.__dados)
+
+    def __str__(self):
+        return f"Repositório com {len(self.__dados)} item(ns)"
