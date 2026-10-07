@@ -31,108 +31,129 @@ class Publicacao(ABC):
         self.set_avaliacao(avaliacao)
         self.set_dataInclusao(dataInclusao)
 
-    # GETTERS
+```python
 
-    def get_id(self):
-        return self.__id
+@property
+def id(self):
+    return self.__id
 
-    def get_titulo(self):
-        return self.__titulo
+@id.setter
+def id(self, id):
+    if id is None:
+        raise ValueError("O ID não pode ser vazio.")
 
-    def get_autor(self):
-        return self.__autor
+    self.__id = id
 
-    def get_ano(self):
-        return self.__ano
+@property
+def titulo(self):
+    return self.__titulo
 
-    def get_genero(self):
-        return self.__genero
+@titulo.setter
+def titulo(self, titulo):
+    if not isinstance(titulo, str) or not titulo.strip():
+        raise ValueError("O título não pode estar/ser vazio.")
 
-    def get_numPaginas(self):
-        return self.__numPaginas
+    self.__titulo = titulo.strip()
 
-    def get_status(self):
-        return self.__status
 
-    def get_avaliacao(self):
-        return self.__avaliacao
+@property
+def autor(self):
+    return self.__autor
 
-    def get_dataInclusao(self):
-        return self.__dataInclusao
+@autor.setter
+def autor(self, autor):
+    if not isinstance(autor, str) or not autor.strip():
+        raise ValueError("O autor não pode ser vazio.")
 
-    # SETTERS
+    self.__autor = autor.strip()
 
-    def set_id(self, id):
-        if id is None:
-            raise ValueError("O ID não pode ser vazio.")
 
-        self.__id = id
+@property
+def ano(self):
+    return self.__ano
 
-    def set_titulo(self, titulo):
-        if not isinstance(titulo, str) or not titulo.strip():
-            raise ValueError("O título não pode ser vazio.")
+@ano.setter
+def ano(self, ano):
+    if not isinstance(ano, int):
+        raise TypeError("O ano deve ser um número inteiro.")
 
-        self.__titulo = titulo.strip()
+    if ano <= 0:
+        raise ValueError("O ano deve ser maior que zero.")
 
-    def set_autor(self, autor):
-        if not isinstance(autor, str) or not autor.strip():
-            raise ValueError("O autor não pode ser vazio.")
+    self.__ano = ano
 
-        self.__autor = autor.strip()
 
-    def set_ano(self, ano):
-        if not isinstance(ano, int):
-            raise TypeError("O ano deve ser um número inteiro.")
+@property
+def genero(self):
+    return self.__genero
 
-        if ano <= 0:
-            raise ValueError("O ano deve ser maior que zero.")
+@genero.setter
+def genero(self, genero):
+    if not isinstance(genero, str) or not genero.strip():
+        raise ValueError("O gênero não pode ser vazio.")
 
-        self.__ano = ano
+    self.__genero = genero.strip()
 
-    def set_genero(self, genero):
-        if not isinstance(genero, str) or not genero.strip():
-            raise ValueError("O gênero não pode ser vazio.")
 
-        self.__genero = genero.strip()
+@property
+def numPaginas(self):
+    return self.__numPaginas
 
-    def set_numPaginas(self, numPaginas):
-        if not isinstance(numPaginas, int):
-            raise TypeError("O número de páginas deve ser um número inteiro.")
+@numPaginas.setter
+def numPaginas(self, numPaginas):
+    if not isinstance(numPaginas, int):
+        raise TypeError("O número de páginas deve ser um número inteiro.")
 
-        if numPaginas <= 0:
+    if numPaginas <= 0:
+        raise ValueError("O número de páginas deve ser maior que zero.")
+
+    self.__numPaginas = numPaginas
+
+
+@property
+def status(self):
+    return self.__status
+
+@status.setter
+def status(self, status):
+    if status is None:
+        raise ValueError("O status não pode ser vazio.")
+
+    self.__status = status
+
+
+@property
+def avaliacao(self):
+    return self.__avaliacao
+
+@avaliacao.setter
+def avaliacao(self, avaliacao):
+    if avaliacao is not None:
+        if not isinstance(avaliacao, (int, float)):
+            raise TypeError("A avaliação deve ser um número.")
+
+        if avaliacao < 0 or avaliacao > 10:
             raise ValueError(
-                "O número de páginas deve ser maior que zero."
+                "A avaliação deve estar entre 0 e 10."
             )
 
-        self.__numPaginas = numPaginas
+    self.__avaliacao = avaliacao
 
-    def set_status(self, status):
-        if status is None:
-            raise ValueError("O status não pode ser vazio.")
 
-        self.__status = status
+@property
+def dataInclusao(self):
+    return self.__dataInclusao
 
-    def set_avaliacao(self, avaliacao):
-        if avaliacao is not None:
-            if not isinstance(avaliacao, (int, float)):
-                raise TypeError(
-                    "A avaliação deve ser um número."
-                )
+@dataInclusao.setter
+def dataInclusao(self, dataInclusao):
+    if dataInclusao is not None and not isinstance(dataInclusao, date):
+        raise TypeError(
+            "A data de inclusão deve ser uma data válida."
+        )
 
-            if avaliacao < 0 or avaliacao > 10:
-                raise ValueError(
-                    "A avaliação deve estar entre 0 e 10."
-                )
+    self.__dataInclusao = dataInclusao
+```
 
-        self.__avaliacao = avaliacao
-
-    def set_dataInclusao(self, dataInclusao):
-        if dataInclusao is not None and not isinstance(dataInclusao, date):
-            raise TypeError(
-                "A data de inclusão deve ser uma data válida."
-            )
-
-        self.__dataInclusao = dataInclusao
         
     # VALIDAÇÃO
 
