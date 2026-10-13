@@ -1,21 +1,29 @@
-class Repositorio:
-    """Classe base dos repositórios da biblioteca."""
+import json
+from pathlib import Path
 
-    def __init__(self):
-        self.__dados = []
 
-    def get_dados(self):
-        return self.__dados
+class RepositorioJSON:
+    def __init__(self, caminho="dados/publicacoes.json"):
+        self.__caminho = Path(caminho)
+        self.__caminho.parent.mkdir(
+            parents=True, exist_ok=True
+        )
 
-    def adicionar(self, dado):
-        self.__dados.append(dado)
+    def salvar(self, dados):
+        with self.__caminho.open(
+            "w", encoding="utf-8"
+        ) as arquivo:
+            json.dump(
+                dados, arquivo,
+                ensure_ascii=False, indent=4
+            )
 
-    def remover(self, dado):
-        if dado in self.__dados:
-            self.__dados.remove(dado)
+    def listar(self):
+        if not self.__caminho.exists():
+            return []
 
-    def __len__(self):
-        return len(self.__dados)
+        with self.__caminho.open(
+            "r", encoding="utf-8"
+        ) as arquivo:
+            return json.load(arquivo)
 
-    def __str__(self):
-        return f"Repositório com {len(self.__dados)} item(ns)"
