@@ -124,6 +124,44 @@ class Publicacao(ABC):
 
         self.__dataInclusao = dataInclusao
 
+    # convertendo as coisas para DICIONÁRIO
+
+    def to_dict(self):
+        """Transforma a publicação em um dicionário (para salvar em JSON)."""
+
+        data = self.get_dataInclusao()
+        if data is not None:
+            data = data.isoformat()
+
+        return {
+            "tipo": type(self).__name__,
+            "id": self.get_id(),
+            "titulo": self.get_titulo(),
+            "autor": self.get_autor(),
+            "ano": self.get_ano(),
+            "genero": self.get_genero(),
+            "numPaginas": self.get_numPaginas(),
+            "status": self.get_status().name,
+            "avaliacao": self.get_avaliacao(),
+            "dataInclusao": data
+        }
+
+    @classmethod
+    def from_dict(cls, dados):
+        """Cria uma publicação a partir de um dicionário."""
+
+        data = dados.get("dataInclusao")
+        if data is not None:
+            data = date.fromisoformat(data)
+
+        return cls(
+            dados["id"], dados["titulo"], dados["autor"],
+            dados["ano"], dados["genero"], dados["numPaginas"],
+            StatusLeitura[dados["status"]],
+            dados.get("avaliacao"),
+            data
+        )
+
     # VALIDAÇÃO
 
     def validarDados(self):
