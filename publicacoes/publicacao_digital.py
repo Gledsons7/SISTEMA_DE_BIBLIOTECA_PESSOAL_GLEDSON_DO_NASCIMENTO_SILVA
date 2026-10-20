@@ -1,5 +1,6 @@
 from publicacoes.publicacao import Publicacao
-
+from datetime import date
+from publicacao.status_leitura import StatusLeitura
 
 class PublicacaoDigital(Publicacao):
     """Classe abstrata que representa uma publicação digital."""
