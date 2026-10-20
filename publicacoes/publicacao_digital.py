@@ -58,6 +58,30 @@ class PublicacaoDigital(Publicacao):
     def abrir(self):
         return f"Abrindo a publicação: {self.get_titulo()}"
 
+
+    # CONVERSÃO PARA DICIONÁRIO
+
+    def to_dict(self):
+        dados = super().to_dict()
+        dados["formato"] = self.get_formato()
+        dados["tamanhoMB"] = self.get_tamanhoMB()
+        return dados
+
+    @classmethod
+    def from_dict(cls, dados):
+        data = dados.get("dataInclusao")
+        if data is not None:
+            data = date.fromisoformat(data)
+
+        return cls(
+            dados["id"], dados["titulo"], dados["autor"],
+            dados["ano"], dados["genero"], dados["numPaginas"],
+            StatusLeitura[dados["status"]],
+            dados["formato"],
+            dados["tamanhoMB"],
+            dados.get("avaliacao"),
+            data
+        )
     # MÉTODO ESPECIAL
 
     def __str__(self):
