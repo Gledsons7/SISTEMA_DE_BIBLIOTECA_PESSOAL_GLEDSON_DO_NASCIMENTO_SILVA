@@ -1,6 +1,6 @@
 from abc import ABC
 from datetime import date
-
+from publicacoes.status_leitura import StatusLeitura
 
 class Publicacao(ABC):
     """Representa uma publicação da biblioteca."""
