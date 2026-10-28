@@ -79,13 +79,11 @@ class Publicacao(ABC):
         self.__autor = autor.strip()
 
     def set_ano(self, ano):
-        if not isinstance(ano, int):
-            raise TypeError("O ano deve ser um número inteiro.")
-
-        if ano <= 0:
-            raise ValueError("O ano deve ser maior que zero.")
-
-        self.__ano = ano
+    if not isinstance(ano, int) or isinstance(ano, bool):
+        raise TypeError("O ano deve ser um número inteiro.")
+    if ano <= 0:
+        raise ValueError("O ano deve ser maior que zero.")
+    self.__ano = ano
 
     def set_genero(self, genero):
         if not isinstance(genero, str) or not genero.strip():
@@ -102,11 +100,10 @@ class Publicacao(ABC):
 
         self.__numPaginas = numPaginas
 
-    def set_status(self, status):
-        if status is None:
-            raise ValueError("O status não pode ser vazio.")
-
-        self.__status = status
+   def set_status(self, status):
+    if not isinstance(status, StatusLeitura):
+        raise ValueError("Status inválido.")
+    self.__status = status
 
     def set_avaliacao(self, avaliacao):
         if avaliacao is not None:
