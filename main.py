@@ -247,6 +247,9 @@ def executar():
 
                 elif opcao == "adicionar" and len(partes) == 4:
                     adicionar_colecao(int(partes[2]), int(partes[3]))
+
+                elif opcao == "remover" and len(partes) == 4:
+                    remover_colecao(int(partes[2]), int(partes[3]))
                 
                 elif opcao == "ver" and len(partes) == 3:
                     ver_colecao(int(partes[2]))
@@ -282,7 +285,11 @@ def ver_colecao(id):
     for c in repo_colecoes.listar():
         if c["id"] == id:
             print(c["nome"])
-            print("Publicações:", c["publicacoes"])
+            for id_pub in c["publicacoes"]:
+                p = next((p for p in carregar()
+                          if str(p["id"]) == str(id_pub)), None)
+                if p:
+                    print("-", p["titulo"])
             return
     print("Coleção não encontrada.")
 
@@ -303,6 +310,21 @@ def adicionar_colecao(id_colecao, id_publicacao):
         colecao["publicacoes"].append(id_publicacao)
         repo_colecoes.salvar(colecoes)
         print("Publicação adicionada à coleção!")
+
+def remover_colecao(id_colecao, id_publicacao):
+    colecoes = repo_colecoes.listar()
+
+    for c in colecoes:
+        if c["id"] == id_colecao:
+            if id_publicacao in c["publicacoes"]:
+                c["publicacoes"].remove(id_publicacao)
+                repo_colecoes.salvar(colecoes)
+                print("Publicação removida da coleção!")
+            else:
+                print("Publicação não está na coleção.")
+            return
+
+    print("Coleção não encontrada.")
 
 if __name__ == "__main__":
     executar()
