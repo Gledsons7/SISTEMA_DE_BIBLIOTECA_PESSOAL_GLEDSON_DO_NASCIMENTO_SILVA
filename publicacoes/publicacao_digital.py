@@ -1,40 +1,20 @@
-from publicacoes.publicacao import Publicacao
 from datetime import date
+from publicacoes.publicacao import Publicacao
 from publicacoes.status_leitura import StatusLeitura
 
-class PublicacaoDigital(Publicacao):
-    """Classe abstrata que representa uma publicação digital."""
 
+class PublicacaoDigital(Publicacao):
     def __init__(
-        self,
-        id,
-        titulo,
-        autor,
-        ano,
-        genero,
-        numPaginas,
-        status,
-        formato,
-        tamanhoMB,
-        avaliacao=None,
+        self, id, titulo, autor, ano, genero, numPaginas,
+        status, formato, tamanhoMB, avaliacao=None,
         dataInclusao=None
     ):
         super().__init__(
-            id,
-            titulo,
-            autor,
-            ano,
-            genero,
-            numPaginas,
-            status,
-            avaliacao,
-            dataInclusao
+            id, titulo, autor, ano, genero, numPaginas,
+            status, avaliacao, dataInclusao
         )
-
-        self.__formato = formato
-        self.__tamanhoMB = tamanhoMB
-
-    # GETTERS
+        self.set_formato(formato)
+        self.set_tamanhoMB(tamanhoMB)
 
     def get_formato(self):
         return self.__formato
@@ -42,24 +22,23 @@ class PublicacaoDigital(Publicacao):
     def get_tamanhoMB(self):
         return self.__tamanhoMB
 
-    # SETTERS
-
     def set_formato(self, formato):
-        self.__formato = formato
+        if not isinstance(formato, str) or not formato.strip():
+            raise ValueError("O formato não pode ser vazio.")
+        self.__formato = formato.strip()
 
     def set_tamanhoMB(self, tamanhoMB):
+        if not isinstance(tamanhoMB, (int, float)) or isinstance(tamanhoMB, bool):
+            raise TypeError("O tamanho deve ser numérico.")
+        if tamanhoMB <= 0:
+            raise ValueError("O tamanho deve ser maior que zero.")
         self.__tamanhoMB = tamanhoMB
-
-    # MÉTODOS DA UML
 
     def baixar(self):
         return f"Baixando a publicação: {self.get_titulo()}"
 
     def abrir(self):
         return f"Abrindo a publicação: {self.get_titulo()}"
-
-
-    # CONVERSÃO PARA DICIONÁRIO
 
     def to_dict(self):
         dados = super().to_dict()
@@ -77,15 +56,12 @@ class PublicacaoDigital(Publicacao):
             dados["id"], dados["titulo"], dados["autor"],
             dados["ano"], dados["genero"], dados["numPaginas"],
             StatusLeitura[dados["status"]],
-            dados["formato"],
-            dados["tamanhoMB"],
-            dados.get("avaliacao"),
-            data
+            dados["formato"], dados["tamanhoMB"],
+            dados.get("avaliacao"), data
         )
-    # MÉTODO ESPECIAL
 
     def __str__(self):
         return (
             f"{self.get_titulo()} - {self.get_autor()} "
-            f"- Formato: {self.__formato}"
+            f"- Formato: {self.get_formato()}"
         )
