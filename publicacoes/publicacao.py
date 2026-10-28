@@ -103,9 +103,9 @@ class Publicacao(ABC):
         self.__numPaginas = numPaginas
 
    def set_status(self, status):
-    if not isinstance(status, StatusLeitura):
-        raise ValueError("Status inválido.")
-    self.__status = status
+        if not isinstance(status, StatusLeitura):
+                raise ValueError("Status inválido.")
+        self.__status = status
 
     def set_avaliacao(self, avaliacao):
         if avaliacao is not None:
