@@ -4,6 +4,7 @@ from publicacoes.revista import Revista
 from publicacoes.livro_digital import LivroDigital
 from publicacoes.status_leitura import StatusLeitura
 from repositorio.repositorio_colecoes import RepositorioColecoes
+from relatorios.relatorio import Relatorio
 
 repo = RepositorioJSON()
 repo_colecoes = RepositorioColecoes()
@@ -143,35 +144,19 @@ def relatorio():
         print("Não há dados para gerar o relatório.")
         return
 
-    print("\n=== RELATÓRIO DA BIBLIOTECA ===")
-    print(f"Total de publicações: {len(dados)}")
+    Relatorio(dados).gerar()
 
-    for tipo in ("livro", "revista", "digital"):
-        total = sum(1 for p in dados if p.get("tipo") == tipo)
-        print(f"{tipo.capitalize()}s: {total}")
+    notas = [float(p["avaliacao"]) for p in dados
+             if p.get("avaliacao") is not None]
 
-    for status in StatusLeitura:
-        total = sum(1 for p in dados if p["status"] == status.name)
-        percentual = total / len(dados) * 100
-        print(f"{status.name}: {total} ({percentual:.1f}%)")
-
-    notas = [
-        float(p["avaliacao"]) for p in dados
-        if p.get("avaliacao") is not None
-    ]
-
-    if notas:
-        print(f"Média das avaliações: {sum(notas) / len(notas):.2f}")
-
-    print("\nPublicações mais bem avaliadas:")
     avaliadas = sorted(
-        (p for p in dados if p.get("avaliacao") is not None),
-        key=lambda p: float(p["avaliacao"]),
-        reverse=True
+        [p for p in dados if p.get("avaliacao") is not None],
+        key=lambda p: float(p["avaliacao"]), reverse=True
     )
 
+    print("\nPublicações mais bem avaliadas:")
     for p in avaliadas[:5]:
-        print(f"- {p['titulo']}: {p['avaliacao']}/10")
+        print(f'- {p["titulo"]}: {p["avaliacao"]}/10')
 
 
 def ajuda():
