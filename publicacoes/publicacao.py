@@ -85,7 +85,6 @@ class Publicacao(ABC):
         if ano <= 0:
             raise ValueError("O ano deve ser maior que zero.")
         self.__ano = ano
-
     
     def set_genero(self, genero):
         if not isinstance(genero, str) or not genero.strip():
