@@ -1,24 +1,15 @@
+
 from abc import ABC
 from datetime import date
 from publicacoes.status_leitura import StatusLeitura
 
+
 class Publicacao(ABC):
     """Representa uma publicação da biblioteca."""
 
-    def __init__(
-        self,
-        id,
-        titulo,
-        autor,
-        ano,
-        genero,
-        numPaginas,
-        status,
-        avaliacao=None,
-        dataInclusao=None
-    ):
-        # Os atributos são definidos através dos setters.
-        # Dessa forma, as regras de validação são aplicadas.
+    def __init__(self, id, titulo, autor, ano, genero,
+                 numPaginas, status, avaliacao=None,
+                 dataInclusao=None):
         self.set_id(id)
         self.set_titulo(titulo)
         self.set_autor(autor)
@@ -30,7 +21,6 @@ class Publicacao(ABC):
         self.set_dataInclusao(dataInclusao)
 
     # GETTERS
-
     def get_id(self):
         return self.__id
 
@@ -59,78 +49,61 @@ class Publicacao(ABC):
         return self.__dataInclusao
 
     # SETTERS
-
     def set_id(self, id):
         if id is None:
             raise ValueError("O ID não pode ser vazio.")
-
         self.__id = id
 
     def set_titulo(self, titulo):
         if not isinstance(titulo, str) or not titulo.strip():
             raise ValueError("O título não pode ser vazio.")
-
         self.__titulo = titulo.strip()
 
     def set_autor(self, autor):
         if not isinstance(autor, str) or not autor.strip():
             raise ValueError("O autor não pode ser vazio.")
-
         self.__autor = autor.strip()
 
-    
     def set_ano(self, ano):
         if not isinstance(ano, int) or isinstance(ano, bool):
             raise TypeError("O ano deve ser um número inteiro.")
         if ano <= 0:
             raise ValueError("O ano deve ser maior que zero.")
         self.__ano = ano
-    
+
     def set_genero(self, genero):
         if not isinstance(genero, str) or not genero.strip():
             raise ValueError("O gênero não pode ser vazio.")
-
         self.__genero = genero.strip()
 
     def set_numPaginas(self, numPaginas):
-        if not isinstance(numPaginas, int):
-            raise TypeError("O número de páginas deve ser um número inteiro.")
-
+        if not isinstance(numPaginas, int) or isinstance(numPaginas, bool):
+            raise TypeError("O número de páginas deve ser um inteiro.")
         if numPaginas <= 0:
-            raise ValueError("O número de páginas deve ser maior que zero.")
-
+            raise ValueError("O número de páginas deve ser positivo.")
         self.__numPaginas = numPaginas
 
-     def set_status(self, status):
+    def set_status(self, status):
         if not isinstance(status, StatusLeitura):
             raise ValueError("Status inválido.")
         self.__status = status
 
     def set_avaliacao(self, avaliacao):
         if avaliacao is not None:
-            if not isinstance(avaliacao, (int, float)):
+            if not isinstance(avaliacao, (int, float)) or isinstance(avaliacao, bool):
                 raise TypeError("A avaliação deve ser um número.")
-
-            if avaliacao < 0 or avaliacao > 10:
+            if not 0 <= avaliacao <= 10:
                 raise ValueError("A avaliação deve estar entre 0 e 10.")
-
         self.__avaliacao = avaliacao
 
     def set_dataInclusao(self, dataInclusao):
         if dataInclusao is not None and not isinstance(dataInclusao, date):
-            raise TypeError("A data de inclusão deve ser uma data válida.")
-
+            raise TypeError("A data de inclusão deve ser válida.")
         self.__dataInclusao = dataInclusao
 
-    # convertendo as coisas para DICIONÁRIO
-
+    # CONVERSÃO PARA DICIONÁRIO
     def to_dict(self):
-        """Transforma a publicação em um dicionário (para salvar em JSON)."""
-
         data = self.get_dataInclusao()
-        if data is not None:
-            data = data.isoformat()
-
         return {
             "tipo": type(self).__name__,
             "id": self.get_id(),
@@ -141,69 +114,50 @@ class Publicacao(ABC):
             "numPaginas": self.get_numPaginas(),
             "status": self.get_status().name,
             "avaliacao": self.get_avaliacao(),
-            "dataInclusao": data
+            "dataInclusao": data.isoformat() if data else None
         }
 
     @classmethod
     def from_dict(cls, dados):
-        """Cria uma publicação a partir de um dicionário."""
-
         data = dados.get("dataInclusao")
-        if data is not None:
+        if data:
             data = date.fromisoformat(data)
 
         return cls(
             dados["id"], dados["titulo"], dados["autor"],
             dados["ano"], dados["genero"], dados["numPaginas"],
             StatusLeitura[dados["status"]],
-            dados.get("avaliacao"),
-            data
+            dados.get("avaliacao"), data
         )
 
-    # VALIDAÇÃO
-
     def validarDados(self):
-        """Verifica se os dados da publicação são válidos."""
-
-        if not self.__titulo:
-            return False
-
-        if not self.__autor:
-            return False
-
-        if self.__ano <= 0:
-            return False
-
-        if self.__numPaginas <= 0:
-            return False
-
-        if self.__avaliacao is not None:
-            if self.__avaliacao < 0 or self.__avaliacao > 10:
-                return False
-
-        return True
+        return (
+            bool(self.__titulo)
+            and bool(self.__autor)
+            and self.__ano > 0
+            and self.__numPaginas > 0
+            and (
+                self.__avaliacao is None
+                or 0 <= self.__avaliacao <= 10
+            )
+        )
 
     # MÉTODOS ESPECIAIS
-
     def __str__(self):
         return f"{self.__titulo} - {self.__autor}"
 
     def __repr__(self):
         return (
-            f"Publicacao("
-            f"id={self.__id}, "
-            f"titulo='{self.__titulo}', "
-            f"autor='{self.__autor}')"
+            f"Publicacao(id={self.__id}, "
+            f"titulo='{self.__titulo}', autor='{self.__autor}')"
         )
 
     def __eq__(self, outra):
         if not isinstance(outra, Publicacao):
             return False
-
         return self.__id == outra.get_id()
 
     def __lt__(self, outra):
         if not isinstance(outra, Publicacao):
             return NotImplemented
-
         return self.__titulo < outra.get_titulo()
