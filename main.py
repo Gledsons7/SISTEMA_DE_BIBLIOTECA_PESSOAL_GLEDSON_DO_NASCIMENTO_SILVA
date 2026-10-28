@@ -187,6 +187,9 @@ filtrar genero NOME    Filtra por gênero
 ordenar titulo         Ordena por título
 relatorio              Exibe estatísticas
 sair                   Encerra o sistema
+colecao criar NOME     Cria uma coleção
+colecao listar         Lista as coleções
+colecao ver ID         Mostra uma coleção
 """)
 
 
@@ -197,7 +200,7 @@ def executar():
     while True:
         try:
             comando = input("\nbiblioteca> ").strip()
-            partes = comando.split(maxsplit=2)
+            partes = comando.split()
 
             if not partes:
                 continue
@@ -230,6 +233,25 @@ def executar():
                     print("Ordenação disponível: titulo.")
             elif acao == "relatorio":
                 relatorio()
+            elif acao == "colecao" and len(partes) >= 2:
+                opcao = partes[1].lower()
+
+                if opcao == "criar" and len(partes) == 3:
+                    criar_colecao(partes[2])
+                elif opcao == "listar":
+                    listar_colecoes()
+
+                elif opcao == "adicionar" and len(partes) == 3:
+                    ids = partes[2].split()
+                    print("Use: colecao adicionar ID_COLECAO ID_PUBLICACAO")
+
+                elif opcao == "adicionar" and len(partes) == 4:
+                    adicionar_colecao(int(partes[2]), int(partes[3]))
+                
+                elif opcao == "ver" and len(partes) == 3:
+                    ver_colecao(int(partes[2]))
+                else:
+                    print("Comando de colecao invalido.")
             elif acao == "sair":
                 print("Sistema encerrado.")
                 break
@@ -263,6 +285,24 @@ def ver_colecao(id):
             print("Publicações:", c["publicacoes"])
             return
     print("Coleção não encontrada.")
+
+def adicionar_colecao(id_colecao, id_publicacao):
+    colecoes = repo_colecoes.listar()
+    publicacoes = carregar()
+
+    colecao = next((c for c in colecoes if c["id"] == id_colecao), None)
+    publicacao = next((p for p in publicacoes if str(p["id"]) == str(id_publicacao)), None)
+
+    if not colecao:
+        print("Coleção não encontrada.")
+    elif not publicacao:
+        print("Publicação não encontrada.")
+    elif id_publicacao in colecao["publicacoes"]:
+        print("Publicação já está na coleção.")
+    else:
+        colecao["publicacoes"].append(id_publicacao)
+        repo_colecoes.salvar(colecoes)
+        print("Publicação adicionada à coleção!")
 
 if __name__ == "__main__":
     executar()
