@@ -1,3 +1,7 @@
+from datetime import date
+from publicacoes.livro import Livro
+from publicacoes.status_leitura import StatusLeitura
+
 def test_to_dict_livro():
     livro = Livro(
         1, "A Cinco Passos de Você", "Rachael Lippincott", 2018,
