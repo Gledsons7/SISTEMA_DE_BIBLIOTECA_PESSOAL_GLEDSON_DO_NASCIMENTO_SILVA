@@ -5,6 +5,10 @@ from publicacoes.livro_digital import LivroDigital
 from publicacoes.status_leitura import StatusLeitura
 from repositorio.repositorio_colecoes import RepositorioColecoes
 from relatorios.relatorio import Relatorio
+from publicacoes.anotacao import Anotacao
+from repositorio.repositorio_anotacoes import RepositorioAnotacoes
+from datetime import date
+
 
 def criar_objeto(dados):
     tipo = dados["tipo"].lower()
@@ -18,6 +22,7 @@ def criar_objeto(dados):
 
 repo = RepositorioJSON()
 repo_colecoes = RepositorioColecoes()
+repo_anotacoes = RepositorioAnotacoes()
 
 def carregar():
     return [criar_objeto(p).to_dict() for p in repo.listar()]
@@ -92,7 +97,7 @@ def cadastrar():
         registro = objeto.to_dict()
         registro["tipo"] = tipo
         dados.append(registro)
-        
+
         salvar(dados)
         print(f"Publicação cadastrada! ID: {id}")
 
@@ -157,6 +162,71 @@ def relatorio():
         print(f'- {p["titulo"]}: {p["avaliacao"]}/10')
 
 
+def criar_anotacao(id_publicacao):
+    if not any(str(p["id"]) == id_publicacao for p in carregar()):
+        print("Publicação não encontrada.")
+        return
+
+    texto = input("Texto da anotação: ")
+    trecho = input("Trecho (opcional): ").strip() or None
+
+    anotacao = Anotacao(texto, date.today(), trecho)
+    dados = repo_anotacoes.listar()
+    dados.append({
+        "id": len(dados) + 1,
+        "id_publicacao": int(id_publicacao),
+        **anotacao.to_dict()
+    })
+
+    repo_anotacoes.salvar(dados)
+    print("Anotação criada!")
+
+
+def editar_anotacao(id):
+    dados = repo_anotacoes.listar()
+
+    for a in dados:
+        if str(a["id"]) == id:
+            a["texto"] = input("Novo texto: ").strip()
+
+            if not a["texto"]:
+                print("O texto não pode ficar vazio.")
+                return
+
+            repo_anotacoes.salvar(dados)
+            print("Anotação editada!")
+            return
+
+    print("Anotação não encontrada.")
+
+
+def listar_anotacoes(id_publicacao):
+    dados = repo_anotacoes.listar()
+    encontradas = [
+        a for a in dados
+        if str(a["id_publicacao"]) == str(id_publicacao)
+    ]
+
+    if not encontradas:
+        print("Nenhuma anotação encontrada.")
+        return
+
+    for a in encontradas:
+        print(f'ID: {a["id"]} | {a["data"]} | {a["texto"]}')
+        if a.get("trecho"):
+            print(f'Trecho: {a["trecho"]}')
+
+def excluir_anotacao(id):
+    dados = repo_anotacoes.listar()
+    novos = [a for a in dados if str(a["id"]) != id]
+
+    if len(novos) == len(dados):
+        print("Anotação não encontrada.")
+        return
+
+    repo_anotacoes.salvar(novos)
+    print("Anotação excluída!")
+
 def ajuda():
     print("""
 === COMANDOS DA BIBLIOTECA ===
@@ -173,6 +243,10 @@ sair                   Encerra o sistema
 colecao criar NOME     Cria uma coleção
 colecao listar         Lista as coleções
 colecao ver ID         Mostra uma coleção
+colecao adicionar ID ID_PUBLICACAO   colecao remover ID ID_PUBLICACAO
+anotacao criar ID_PUBLICACAO  Criar uma anotação
+anotacao editar ID     Edita uma anotação
+anotacao excluir ID    Exclui uma anotação
 """)
 
 
@@ -224,10 +298,6 @@ def executar():
                 elif opcao == "listar":
                     listar_colecoes()
 
-                elif opcao == "adicionar" and len(partes) == 3:
-                    ids = partes[2].split()
-                    print("Use: colecao adicionar ID_COLECAO ID_PUBLICACAO")
-
                 elif opcao == "adicionar" and len(partes) == 4:
                     adicionar_colecao(int(partes[2]), int(partes[3]))
 
@@ -238,6 +308,19 @@ def executar():
                     ver_colecao(int(partes[2]))
                 else:
                     print("Comando de colecao invalido.")
+
+            elif acao == "anotacao" and len(partes) == 3:
+                if partes[1] == "criar":
+                    criar_anotacao(partes[2])
+                elif partes[1] == "listar" and len(partes) == 3:
+                    listar_anotacoes(partes[2])
+                elif partes[1] == "editar" and len(partes) == 3:
+                    editar_anotacao(partes[2])
+                elif partes[1] == "excluir" and len(partes) == 3:
+                    excluir_anotacao(partes[2])
+            
+                else:
+                    print("Use: anotacao criar ID_PUBLICACAO")
             elif acao == "sair":
                 print("Sistema encerrado.")
                 break

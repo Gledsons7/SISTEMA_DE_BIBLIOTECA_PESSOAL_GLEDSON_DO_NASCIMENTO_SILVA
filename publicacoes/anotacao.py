@@ -53,3 +53,18 @@ class Anotacao:
 
     def __str__(self):
         return self.__texto if self.__texto is not None else "Anotação excluída"
+    
+    def to_dict(self):
+        return {
+            "texto": self.__texto,
+            "data": self.__data.isoformat(),
+            "trecho": self.__trecho
+        }
+
+    @classmethod
+    def from_dict(cls, dados):
+        return cls(
+            dados["texto"],
+            date.fromisoformat(dados["data"]),
+            dados.get("trecho")
+        )
