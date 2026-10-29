@@ -230,23 +230,25 @@ def excluir_anotacao(id):
 def ajuda():
     print("""
 === COMANDOS DA BIBLIOTECA ===
-ajuda                  Mostra os comandos
-cadastrar              Cadastra uma publicação
-listar                 Lista as publicações
-buscar ID              Busca pelo ID
-remover ID             Remove pelo ID
-filtrar status STATUS  Filtra por status
-filtrar genero NOME    Filtra por gênero
-ordenar titulo         Ordena por título
-relatorio              Exibe estatísticas
-sair                   Encerra o sistema
-colecao criar NOME     Cria uma coleção
-colecao listar         Lista as coleções
-colecao ver ID         Mostra uma coleção
-colecao adicionar ID ID_PUBLICACAO   colecao remover ID ID_PUBLICACAO
-anotacao criar ID_PUBLICACAO  Criar uma anotação
-anotacao editar ID     Edita uma anotação
-anotacao excluir ID    Exclui uma anotação
+ajuda                         Mostra os comandos
+cadastrar                     Cadastra uma publicação
+listar                        Lista as publicações
+buscar ID                     Busca uma publicação
+remover ID                    Remove uma publicação
+filtrar status STATUS         Filtra por status
+filtrar genero NOME           Filtra por gênero
+ordenar titulo                Ordena por título
+relatorio                     Exibe estatísticas
+colecao criar NOME            Cria uma coleção
+colecao listar                Lista as coleções
+colecao ver ID                Mostra uma coleção
+colecao adicionar ID ID_PUB   Adiciona publicação à coleção
+colecao remover ID ID_PUB     Remove publicação da coleção
+anotacao criar ID_PUB         Cria uma anotação
+anotacao listar ID_PUB        Lista anotações da publicação
+anotacao editar ID            Edita uma anotação
+anotacao excluir ID           Exclui uma anotação
+sair                          Encerra o sistema
 """)
 
 
@@ -309,18 +311,22 @@ def executar():
                 else:
                     print("Comando de colecao invalido.")
 
-            elif acao == "anotacao" and len(partes) == 3:
-                if partes[1] == "criar":
+            elif acao == "anotacao" and len(partes) >= 2:
+                opcao = partes[1].lower()
+
+                if opcao == "criar" and len(partes) == 3:
                     criar_anotacao(partes[2])
-                elif partes[1] == "listar" and len(partes) == 3:
+                elif opcao == "listar" and len(partes) == 3:
                     listar_anotacoes(partes[2])
-                elif partes[1] == "editar" and len(partes) == 3:
+                elif opcao == "editar" and len(partes) == 3:
                     editar_anotacao(partes[2])
-                elif partes[1] == "excluir" and len(partes) == 3:
+                elif opcao == "excluir" and len(partes) == 3:
                     excluir_anotacao(partes[2])
-            
                 else:
-                    print("Use: anotacao criar ID_PUBLICACAO")
+                    print(
+                        "Use: anotacao criar ID, listar ID, "
+                        "editar ID ou excluir ID."
+                    )
             elif acao == "sair":
                 print("Sistema encerrado.")
                 break
