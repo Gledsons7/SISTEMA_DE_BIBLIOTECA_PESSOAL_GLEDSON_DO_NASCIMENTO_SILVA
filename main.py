@@ -6,11 +6,21 @@ from publicacoes.status_leitura import StatusLeitura
 from repositorio.repositorio_colecoes import RepositorioColecoes
 from relatorios.relatorio import Relatorio
 
+def criar_objeto(dados):
+    tipo = dados["tipo"].lower()
+
+    if tipo == "livro":
+        return Livro.from_dict(dados)
+    elif tipo == "revista":
+        return Revista.from_dict(dados)
+    elif tipo in ("livrodigital", "digital"):
+        return LivroDigital.from_dict(dados)
+
 repo = RepositorioJSON()
 repo_colecoes = RepositorioColecoes()
 
 def carregar():
-    return repo.listar()
+    return [criar_objeto(p).to_dict() for p in repo.listar()]
 
 
 def salvar(dados):
@@ -79,22 +89,10 @@ def cadastrar():
             print("Os dados da publicação são inválidos.")
             return
 
-        dados.append({
-            "id": id,
-            "tipo": tipo,
-            "titulo": titulo,
-            "autor": autor,
-            "ano": ano,
-            "genero": genero,
-            "numPaginas": paginas,
-            "status": status.name,
-            "avaliacao": avaliacao,
-            **(
-                {"formato": formato, "tamanhoMB": tamanho}
-                if tipo == "digital" else {}
-            )
-        })
-
+        registro = objeto.to_dict()
+        registro["tipo"] = tipo
+        dados.append(registro)
+        
         salvar(dados)
         print(f"Publicação cadastrada! ID: {id}")
 
